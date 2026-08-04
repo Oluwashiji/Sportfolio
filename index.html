@@ -11,7 +11,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" type='text/css' href="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/devicon.min.css" />
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
     <script>
         tailwind.config = {
             theme: {
@@ -102,9 +101,9 @@
                         <a href="#contact" class="px-8 py-3.5 border border-white/10 hover:bg-white/5 text-white font-medium rounded-full transition-all duration-300">Contact Me</a>
                     </div>
                     <div class="flex items-center gap-8 md:gap-12">
-                        <div><div class="text-3xl font-bold font-display text-white">3+</div><div class="text-sm text-gray-500 mt-1">Projects Shipped</div></div>
+                        <div><div class="text-3xl font-bold font-display text-white">5+</div><div class="text-sm text-gray-500 mt-1">Projects Shipped</div></div>
                         <div class="h-10 w-px bg-white/10"></div>
-                        <div><div class="text-3xl font-bold font-display text-white">2+</div><div class="text-sm text-gray-500 mt-1">Years Building</div></div>
+                        <div><div class="text-3xl font-bold font-display text-white">3+</div><div class="text-sm text-gray-500 mt-1">Years Building</div></div>
                         <div class="h-10 w-px bg-white/10"></div>
                         <div><div class="text-3xl font-bold font-display text-green-400">Open</div><div class="text-sm text-gray-500 mt-1">To Work</div></div>
                     </div>
@@ -352,7 +351,7 @@
                 </a>
             </div>
             <div class="reveal max-w-2xl mx-auto">
-                <form id="contact-form" class="glass rounded-2xl p-8 md:p-10 space-y-6">
+                <form id="contact-form" action="https://formspree.io/f/mdennejo" method="POST" class="glass rounded-2xl p-8 md:p-10 space-y-6">
                     <div class="grid md:grid-cols-2 gap-6">
                         <div class="space-y-2">
                             <label for="name" class="text-sm text-gray-400 font-medium">Name</label>
@@ -400,7 +399,8 @@
                 </div>
             </div>
             <div class="border-t border-white/5 pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-600">
-              
+                <p> 2024 Shiji. All rights reserved.</p>
+                <p class="flex items-center gap-1">Made with <svg class="w-4 h-4 text-red-500 animate-pulse" fill="currentColor" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg> in Nigeria</p>
             </div>
         </div>
     </footer>
@@ -467,16 +467,11 @@
             navLinks.forEach(link=>{link.classList.remove('text-blue-400');if(link.getAttribute('href')==='#'+current)link.classList.add('text-blue-400');});
         });
 
-        // Contact Form - sent via EmailJS (no backend needed)
-        // 1. Sign up free at https://www.emailjs.com
-        // 2. Add an Email Service (e.g. connect your Gmail) -> copy its Service ID
-        // 3. Create an Email Template with {{name}}, {{email}}, {{message}} variables -> copy its Template ID
-        // 4. Go to Account > General -> copy your Public Key
-        // 5. Paste all three below
-        emailjs.init({ publicKey: 'YOUR_PUBLIC_KEY' });
-        const EMAILJS_SERVICE_ID = 'YOUR_SERVICE_ID';
-        const EMAILJS_TEMPLATE_ID = 'YOUR_TEMPLATE_ID';
-
+        // Contact Form - sent via Formspree (no backend needed)
+        // 1. Sign up free at https://formspree.io
+        // 2. Create a new form, set its notification email to yours
+        // 3. Copy the endpoint it gives you, e.g. https://formspree.io/f/abcd1234
+        // 4. Paste it into the form's action attribute above, replacing YOUR_FORM_ID
         const form=document.getElementById('contact-form');
         const toast=document.getElementById('toast');
         const submitBtn=document.getElementById('contact-submit-btn');
@@ -485,11 +480,15 @@
             e.preventDefault();
             submitBtn.disabled=true;
             submitLabel.textContent='Sending...';
-            emailjs.sendForm(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_ID, form)
-                .then(()=>{
-                    toast.classList.remove('translate-y-20','opacity-0');
-                    form.reset();
-                    setTimeout(()=>{toast.classList.add('translate-y-20','opacity-0');},3000);
+            fetch(form.action,{method:'POST',body:new FormData(form),headers:{'Accept':'application/json'}})
+                .then(response=>{
+                    if(response.ok){
+                        toast.classList.remove('translate-y-20','opacity-0');
+                        form.reset();
+                        setTimeout(()=>{toast.classList.add('translate-y-20','opacity-0');},3000);
+                    } else {
+                        alert('Something went wrong sending your message. Please try again or email me directly.');
+                    }
                 })
                 .catch(()=>{
                     alert('Something went wrong sending your message. Please try again or email me directly.');
